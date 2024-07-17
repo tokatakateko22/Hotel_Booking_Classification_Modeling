@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking Status Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 20px;
+        }
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+        input[type="text"], input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box; /* Ensure padding and border width are included in total width */
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        /* Modal styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4); 
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; 
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; 
+            border-radius: 10px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Enter Booking Details</h2>
+    <form method="POST" action="/predict" id="predictionForm">
+        <label for="number_of_adults">Number of Adults:</label>
+        <input type="text" id="number_of_adults" name="number_of_adults" required><br>
+
+        <label for="number_of_children">Number of Children:</label>
+        <input type="text" id="number_of_children" name="number_of_children" required><br>
+
+        <label for="number_of_weekend_nights">Number of Weekend Nights:</label>
+        <input type="text" id="number_of_weekend_nights" name="number_of_weekend_nights" required><br>
+
+        <label for="number_of_week_nights">Number of Week Nights:</label>
+        <input type="text" id="number_of_week_nights" name="number_of_week_nights"><br>
+
+        <label for="type_of_meal">Type of Meal:</label>
+        <input type="text" id="type_of_meal" name="type_of_meal"><br>
+
+        <label for="room_type">Room Type:</label>
+        <input type="text" id="room_type" name="room_type"><br>
+
+        <label for="lead_time">Lead Time:</label>
+        <input type="text" id="lead_time" name="lead_time"><br>
+
+        <label for="average_price">Average Price:</label>
+        <input type="text" id="average_price" name="average_price"><br>
+
+        <label for="special_requests">Special Requests:</label>
+        <input type="text" id="special_requests" name="special_requests"><br>
+
+        <label for="date_of_reservation">Date of Reservation:</label>
+        <input type="text" id="date_of_reservation" name="date_of_reservation"><br>
+
+        <input type="submit" value="Predict">
+    </form>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="predictionResult"></p>
+        </div>
+    </div>
+
+    <script>
+        // Get the modal
+        var modal = document.getElementById("myModal");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Handle form submission
+        document.getElementById("predictionForm").onsubmit = function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Create a FormData object from the form
+            var formData = new FormData(event.target);
+
+            // Send the form data to the server using fetch
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the prediction result in the modal
+                document.getElementById("predictionResult").innerText = data.prediction;
+                modal.style.display = "block";
+            })
+            .catch(error => console.error('Error:', error));
+        };
+    </script>
+</body>
+</html>
